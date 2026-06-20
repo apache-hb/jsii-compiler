@@ -868,6 +868,13 @@ export class Assembler implements Emitter {
       return [];
     }
 
+    // Early exit if the node is marked with `@jsii ignore`. Without this
+    // deriving from a Partial<T> would cause compiler errors even if the interface
+    // was marked with `@jsii ignore`
+    if (Directives.of(node, (diag) => this._diagnostics.push(diag)).ignore != null) {
+      return [];
+    }
+
     let jsiiType: spec.Type | undefined;
 
     if (ts.isClassDeclaration(node) && _isExported(node)) {
